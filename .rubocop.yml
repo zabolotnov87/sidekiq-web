@@ -1,0 +1,14 @@
+AllCops:
+  TargetRubyVersion: 2.5
+
+  Exclude:
+    - 'bin/rubocop'
+
+Style/Documentation:
+  Enabled: false
+
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: comma
