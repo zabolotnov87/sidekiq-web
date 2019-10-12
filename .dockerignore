@@ -1,0 +1,6 @@
+.dockerignore
+.envrc
+.rubocop.yml
+Makefile
+Dockerfile
+README.md

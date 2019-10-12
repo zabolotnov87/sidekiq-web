@@ -1,12 +1,14 @@
-FROM ruby:2.5.3-alpine
+FROM ruby:2.6.5-alpine
 RUN apk add --no-cache \
   g++ \
   musl-dev \
   make
 ENV APP /app
 RUN mkdir -p $APP
+ENV PATH $APP/bin:$PATH
 WORKDIR $APP
+RUN gem install bundler
 COPY Gemfile* ./
 RUN bundle install --without development
-COPY config.ru $APP
-CMD ["thin", "-a", "127.0.0.1", "-p", "9292", "-R", "config.ru", "start"]
+COPY . ./
+CMD ["start"]

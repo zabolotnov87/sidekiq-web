@@ -4,7 +4,7 @@ IMAGE ?= zabolotnov87/sidekiq-web
 TAG ?= latest
 
 lint:
-	bin/rubocop -a
+	bin/rubocop
 
 build:
 	docker build --tag "${IMAGE}:${TAG}" .

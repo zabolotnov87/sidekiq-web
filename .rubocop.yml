@@ -1,8 +1,7 @@
 AllCops:
-  TargetRubyVersion: 2.5
-
+  TargetRubyVersion: 2.6
   Exclude:
-    - 'bin/rubocop'
+    - bin/*
 
 Style/Documentation:
   Enabled: false

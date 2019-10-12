@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+
+if [ -z "$BIND" ]; then
+  BIND="127.0.0.1"
+fi
+
+if [ -z "$PORT" ]; then
+  PORT="9292"
+fi
+
+if [ -z "$REDIS_URL" ]; then
+  REDIS_URL="redis://localhost:6379"
+fi
+
+if [ -z "$ROUTE" ]; then
+  ROUTE="/sidekiq"
+fi
+
+echo "Sidekiq Monitoring is available: http://$BIND:$PORT$ROUTE"
+REDIS_URL=$REDIS_URL ROUTE=$ROUTE thin -a $BIND -p $PORT -R config.ru start
