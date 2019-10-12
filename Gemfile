@@ -3,6 +3,7 @@
 source 'https://rubygems.org'
 
 gem 'sidekiq', '~> 5.2'
+gem 'sidekiq-scheduler', '~> 3.0', require: false
 gem 'thin', '~> 1.7'
 
 group :development do
