@@ -2,7 +2,8 @@ FROM ruby:2.6.5-alpine
 RUN apk add --no-cache \
   g++ \
   musl-dev \
-  make
+  make \
+  tzdata
 ENV APP /app
 RUN mkdir -p $APP
 ENV PATH $APP/bin:$PATH
