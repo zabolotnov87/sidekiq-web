@@ -2,7 +2,9 @@
 
 require 'sidekiq/web'
 
-sidekiq_scheduler_web_enabled = ENV.fetch('SIDEKIQ_SCHEDULER_WEB_ENABLED', false)
+sidekiq_scheduler_web_enabled =
+  ENV.fetch('SIDEKIQ_SCHEDULER_WEB_ENABLED', false)
+active_job_enabled = ENV.fetch('ACTIVE_JOB_ENABLED', false)
 redis_url = ENV.fetch('REDIS_URL')
 route = ENV.fetch('ROUTE')
 if (basic_auth_enabled = ENV.fetch('BASIC_AUTH_ENABLED', false))
@@ -24,5 +26,9 @@ if basic_auth_enabled
 end
 
 require 'sidekiq-scheduler/web' if sidekiq_scheduler_web_enabled
+
+if sidekiq_scheduler_web_enabled && active_job_enabled
+  require_relative 'configure_for_active_job'
+end
 
 run Rack::URLMap.new(route => Sidekiq::Web)
