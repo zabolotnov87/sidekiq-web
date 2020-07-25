@@ -1,0 +1,74 @@
+#!/usr/bin/env ruby
+
+require 'bundler/setup'
+require 'thor'
+require 'sidekiq/web'
+require 'thin'
+
+DEFAULT_REDIS_URL = 'redis://localhost:6379'.freeze
+DEFAULT_LOGIN = 'admin'.freeze
+DEFAULT_PASSWORD = 'secret'.freeze
+DEFAULT_PORT = 9292
+DEFAULT_HOST = 'localhost'.freeze
+DEFAULT_PATH = '/sidekiq'.freeze
+
+Class.new(Thor) do
+  desc 'start', 'Start sidekiq-web'
+  option :active_job, default: false, type: :boolean, desc: 'Enable ActiveJob patch (required when ActiveJob used)'
+  option :sidekiq_scheduler, default: false, type: :boolean, desc: 'Enable sidekiq-scheduler plugin'
+
+  option :redis_url, default: DEFAULT_REDIS_URL, desc: 'Redis url'
+
+  option :host, default: 'localhost', desc: 'Host to bind'
+  option :port, default: DEFAULT_PORT, type: :numeric, desc: 'Port to bind'
+  option :path, default: DEFAULT_PATH, desc: 'URL path'
+
+  option :basic_auth, default: false, type: :boolean, desc: 'Enable basic authentication'
+  option :login, default: DEFAULT_LOGIN, desc: 'Login for basic auth'
+  option :password, default: DEFAULT_PASSWORD, desc: 'Password for basic auth'
+
+  def start # rubocop:disable Metrics/AbcSize
+    configure_basic_auth(options[:login], options[:password]) if options[:basic_auth]
+
+    configure_redis_client(options[:redis_url])
+
+    require 'sidekiq-scheduler/web' if options[:sidekiq_scheduler]
+    require_relative '../patch/active_job' if options[:sidekiq_scheduler] && options[:active_job]
+
+    start_server(*options.values_at(:host, :port, :path))
+  end
+
+  private
+
+  def configure_basic_auth(login, password)
+    login_sha = ::Digest::SHA256.hexdigest(login)
+    password_sha = ::Digest::SHA256.hexdigest(password)
+
+    Sidekiq::Web.use Rack::Auth::Basic do |input_login, input_password|
+      input_login_sha = ::Digest::SHA256.hexdigest(input_login)
+      input_password_sha = ::Digest::SHA256.hexdigest(input_password)
+
+      secure_compare(login_sha, input_login_sha) && secure_compare(password_sha, input_password_sha)
+    end
+  end
+
+  def secure_compare(arg1, arg2)
+    Rack::Utils.secure_compare(arg1, arg2)
+  end
+
+  def configure_redis_client(redis_url)
+    Sidekiq.configure_client do |config|
+      config.redis = { url: redis_url }
+    end
+  end
+
+  def start_server(host, port, path)
+    Thin::Logging.silent = true
+    Thin::Server.start(host, port) do
+      map path do
+        run Sidekiq::Web
+      end
+      puts "Sidekiq Monitoring started: http://#{host}:#{port}#{path}"
+    end
+  end
+end.start(ARGV)

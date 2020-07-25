@@ -5,17 +5,17 @@ Pack [Sidekiq Web](https://github.com/mperham/sidekiq/wiki/Monitoring#web-ui) to
 # Build
 
 ```sh
-$ make build
+$ make build image_tag=sidekiq-web:latest
 ```
 
 # Push
 
 ```sh
-$ make push
+$ make push image_tag=sidekiq-web:latest
 ```
 
 # Run
 
 ```sh
-docker run -e REDIS_URL=<your redis url> -p 9292:9292
+$ docker run --rm -it sidekiq-web:latest cli help start
 ```

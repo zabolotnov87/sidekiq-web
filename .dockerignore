@@ -1,6 +1,8 @@
 .dockerignore
 .envrc
 .rubocop.yml
+.tool-versions
+.git
 Makefile
 Dockerfile
 README.md

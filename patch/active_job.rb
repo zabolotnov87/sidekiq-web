@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'active_job'
 
 ActiveJob::Base.queue_adapter = :sidekiq

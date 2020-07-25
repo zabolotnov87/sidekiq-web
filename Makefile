@@ -1,13 +1,14 @@
 default: lint
 
-IMAGE ?= zabolotnov87/sidekiq-web
-TAG ?= latest
+image=zabolotnov87/sidekiq-web
+tag=latest
+image_tag=$(image):$(tag)
 
 lint:
 	bin/rubocop
 
 build:
-	docker build --tag "${IMAGE}:${TAG}" .
+	docker build --tag $(image_tag) .
 
 push:
-	docker push "${IMAGE}:${TAG}"
+	docker push $(image_tag)
