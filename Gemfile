@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'activejob', '~> 6.0'
-gem 'sidekiq', '~> 6.0'
+gem 'sidekiq', '~> 6.2'
 gem 'sidekiq-scheduler', '~> 3.0'
 gem 'thin', '~> 1.7'
 gem 'thor', '~> 1.0'
